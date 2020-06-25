@@ -968,7 +968,9 @@ export class MessageTeam extends React.PureComponent<
 export interface MessageSimpleProps extends MessageUIComponentProps {}
 export interface MessageTextProps extends MessageSimpleProps {
   messageOptions?: React.ReactNode;
+  customWrapperClass?: string;
   onReactionListClick?: () => void;
+  theme?: string;
   showDetailedReactions?: boolean;
   reactionSelectorRef: React.RefObject<
     import('../src/components/Reactions/ReactionSelector').default | null

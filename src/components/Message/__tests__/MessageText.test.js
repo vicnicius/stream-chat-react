@@ -1,4 +1,5 @@
 import React from 'react';
+import testRenderer from 'react-test-renderer';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
@@ -30,12 +31,16 @@ function generateAliceMessage(messageOptions) {
   });
 }
 
-async function renderMessageText(customProps, channelConfig) {
+async function renderMessageText(
+  customProps,
+  channelConfig,
+  renderer = render,
+) {
   const client = await getTestClientWithUser(alice);
   const channel = generateChannel({
     getConfig: () => channelConfig,
   });
-  return render(
+  return renderer(
     <ChannelContext.Provider
       value={{
         channel,
@@ -179,5 +184,58 @@ describe('<MessageText />', () => {
     const MessageOptionsMock = jest.fn(() => <div />);
     await renderMessageText({ messageOptions: <MessageOptionsMock /> });
     expect(MessageOptionsMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should render with a custom wrapper class when one is set', async () => {
+    const customWrapperClass = 'custom-wrapper';
+    const message = generateMessage({ text: 'hello world' });
+    const tree = await renderMessageText(
+      { message, customWrapperClass },
+      {},
+      testRenderer.create,
+    );
+    expect(tree.toJSON()).toMatchInlineSnapshot(`
+      <div
+        className="custom-wrapper"
+        data-testid="message-text-wrapper"
+      >
+        <div
+          className="str-chat__message-text-inner str-chat__message-undefined-text-inner"
+          data-testid="message-text-inner-wrapper"
+          onClick={[Function]}
+          onMouseOver={[Function]}
+        >
+          <p>
+            hello world
+          </p>
+        </div>
+      </div>
+    `);
+  });
+
+  it('should render with custom theme identifier in generated css classes when theme is set', async () => {
+    const message = generateMessage({ text: 'hello world' });
+    const tree = await renderMessageText(
+      { message, theme: 'custom' },
+      {},
+      testRenderer.create,
+    );
+    expect(tree.toJSON()).toMatchInlineSnapshot(`
+      <div
+        className="str-chat__message-text"
+        data-testid="message-text-wrapper"
+      >
+        <div
+          className="str-chat__message-text-inner str-chat__message-custom-text-inner"
+          data-testid="message-text-inner-wrapper"
+          onClick={[Function]}
+          onMouseOver={[Function]}
+        >
+          <p>
+            hello world
+          </p>
+        </div>
+      </div>
+    `);
   });
 });

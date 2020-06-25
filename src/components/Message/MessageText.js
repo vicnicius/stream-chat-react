@@ -18,6 +18,8 @@ export const MessageText = (props) => {
     onMentionsClickMessage: propOnMentionsClick,
     onMentionsHoverMessage: propOnMentionsHover,
     actionsEnabled,
+    customWrapperClass,
+    theme = 'simple',
     message,
     messageListRect,
     reactionSelectorRef,
@@ -33,21 +35,26 @@ export const MessageText = (props) => {
   const hasReactions = messageHasReactions(message);
   const hasAttachment = messageHasAttachments(message);
   const handleReaction = useReactionHandler(message);
+  const wrapperClass = customWrapperClass || 'str-chat__message-text';
 
   if (!message || !message.text) {
     return null;
   }
 
   return (
-    <div className="str-chat__message-text">
+    <div data-testid="message-text-wrapper" className={wrapperClass}>
       <div
         data-testid="message-text-inner-wrapper"
         className={`
-          str-chat__message-text-inner str-chat__message-simple-text-inner
-          ${hasAttachment ? 'str-chat__message-text-inner--has-attachment' : ''}
+          str-chat__message-text-inner str-chat__message-${theme}-text-inner
+          ${
+            hasAttachment
+              ? `str-chat__message-${theme}-text-inner--has-attachment`
+              : ''
+          }
           ${
             isOnlyEmojis(message.text)
-              ? 'str-chat__message-simple-text-inner--is-emoji'
+              ? `str-chat__message-${theme}-text-inner--is-emoji`
               : ''
           }
         `.trim()}
@@ -55,12 +62,12 @@ export const MessageText = (props) => {
         onClick={propOnMentionsClick || onMentionsClick}
       >
         {message.type === 'error' && (
-          <div className="str-chat__simple-message--error-message">
+          <div className={`str-chat__${theme}-message--error-message`}>
             {t && t('Error · Unsent')}
           </div>
         )}
         {message.status === 'failed' && (
-          <div className="str-chat__simple-message--error-message">
+          <div className={`str-chat__${theme}-message--error-message`}>
             {t && t('Message Failed · Click to try again')}
           </div>
         )}
