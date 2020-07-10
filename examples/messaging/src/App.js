@@ -32,20 +32,20 @@ const theme = urlParams.get('theme') || 'light';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.chatClient = new StreamChat('qk4nn7rpcn75');
+    this.chatClient = new StreamChat('su8bpkktu674');
     // if (process.env.REACT_APP_CHAT_SERVER_ENDPOINT) {
     //   this.chatClient.setBaseURL(process.env.REACT_APP_CHAT_SERVER_ENDPOINT);
     // }
     this.chatClient.setUser(
       {
-        id: 'example-user',
+        id: 'john-doe',
       },
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZXhhbXBsZS11c2VyIn0.HlC0dMKL43y3K_XbfvQS_Yc3V314HU4Z7LrBLil777g',
+      this.chatClient.devToken('john-doe'),
     );
   }
 
   render() {
-    const filters = { type: 'messaging', example: 1 };
+    const filters = { type: 'messaging' };
     const sort = {
       last_message_at: -1,
       updated_at: -1,
