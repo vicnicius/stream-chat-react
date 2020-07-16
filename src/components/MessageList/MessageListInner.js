@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import deepequal from 'react-fast-compare';
 
-import { Message } from '../Message';
+import { Message as DefaultMessage } from '../Message';
 import { InfiniteScroll } from '../InfiniteScrollPaginator';
 
 // fast since it usually iterates just the last few messages
@@ -175,6 +175,8 @@ const MessageListInner = (props) => {
     read,
     internalMessageProps,
     internalInfiniteScrollProps,
+    useMessageUI = true,
+    Message: MessageUI,
   } = props;
 
   const enrichedMessages = useMemo(() => {
@@ -199,6 +201,7 @@ const MessageListInner = (props) => {
     [enrichedMessages, noGroupByUser],
   );
 
+  const MessageComponent = useMessageUI ? MessageUI : DefaultMessage;
   // get the readData, but only for messages submitted by the user themselves
   const readData = useMemo(
     () =>
@@ -251,7 +254,7 @@ const MessageListInner = (props) => {
             key={message.id || message.created_at}
             onLoadCapture={onMessageLoadCaptured}
           >
-            <Message
+            <MessageComponent
               client={client}
               message={message}
               groupStyles={[groupStyles]} /* TODO: convert to simple string */

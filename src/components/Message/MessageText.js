@@ -106,9 +106,13 @@ const MessageTextComponent = (props) => {
         )}
       </div>
       <MessageOptions
-        {...props}
-        {...customOptionProps}
         onReactionListClick={onReactionListClick}
+        initialMessage={props.initialMessage}
+        message={message}
+        messageWrapperRef={props.messageWrapperRef}
+        threadList={props.threadList}
+        getMessageActions={props.getMessageActions}
+        {...customOptionProps}
       />
     </div>
   );

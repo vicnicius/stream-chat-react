@@ -26,6 +26,7 @@ import { DateSeparator as DefaultDateSeparator } from '../DateSeparator';
  */
 class MessageList extends PureComponent {
   constructor(props) {
+    console.log('New message list');
     super(props);
 
     this.state = {
@@ -247,6 +248,8 @@ class MessageList extends PureComponent {
             client={this.props.client}
             read={this.props.read}
             bottomRef={this.bottomRef}
+            useMessageUI={this.props.useMessageUI}
+            Message={this.props.Message}
             onMessageLoadCaptured={this.onMessageLoadCaptured}
             internalInfiniteScrollProps={{
               hasMore: this.props.hasMore,

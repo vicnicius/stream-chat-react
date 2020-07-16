@@ -159,10 +159,12 @@ const MessageSimple = (props) => {
               <React.Fragment>
                 {
                   <MessageOptions
-                    {...props}
+                    message={message}
+                    getMessageActions={props.getMessageActions}
                     messageWrapperRef={messageWrapperRef}
                     onReactionListClick={onReactionListClick}
                     handleOpenThread={propHandleOpenThread}
+                    threadList={threadList}
                   />
                 }
                 {/* if reactions show them */}
@@ -210,7 +212,11 @@ const MessageSimple = (props) => {
             {images && images.length > 1 && <Gallery images={images} />}
             {message.text && (
               <MessageText
-                {...props}
+                message={message}
+                getMessageActions={props.getMessageActions}
+                actionsEnabled={props.actionsEnabled}
+                unsafeHTML={props.unsafeHTML}
+                messageListRect={props.messageListRect}
                 customOptionProps={{
                   messageWrapperRef,
                   handleOpenThread: propHandleOpenThread,
@@ -346,7 +352,7 @@ MessageSimple.propTypes = {
    * */
   Message: /** @type {PropTypes.Validator<React.ElementType<import('types').MessageUIComponentProps>>} */ (PropTypes.oneOfType(
     [PropTypes.node, PropTypes.func, PropTypes.object],
-  ).isRequired),
+  )),
   /** render HTML instead of markdown. Posting HTML is only allowed server-side */
   unsafeHTML: PropTypes.bool,
   /** Client object */
@@ -355,8 +361,7 @@ MessageSimple.propTypes = {
   /** If its parent message in thread. */
   initialMessage: PropTypes.bool,
   /** Channel config object */
-  channelConfig: /** @type {PropTypes.Validator<import('stream-chat').ChannelConfig>} */ (PropTypes
-    .object.isRequired),
+  channelConfig: /** @type {PropTypes.Validator<import('stream-chat').ChannelConfig>} */ (PropTypes.object),
   /** If component is in thread list */
   threadList: PropTypes.bool,
   /**
@@ -375,7 +380,7 @@ MessageSimple.propTypes = {
    * Returns all allowed actions on message by current user e.g., [edit, delete, flag, mute]
    * Please check [Message](https://github.com/GetStream/stream-chat-react/blob/master/src/components/Message.js) component for default implementation.
    * */
-  getMessageActions: PropTypes.func.isRequired,
+  getMessageActions: PropTypes.func,
   /**
    * Function to publish updates on message to channel
    *

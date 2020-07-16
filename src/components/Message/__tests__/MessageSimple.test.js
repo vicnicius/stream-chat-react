@@ -7,7 +7,6 @@ import {
   generateUser,
   generateMessage,
 } from 'mock-builders';
-import { MESSAGE_ACTIONS } from '../utils';
 import { ChannelContext, TranslationContext } from '../../../context';
 import MessageSimple from '../MessageSimple';
 import { Modal as ModalMock } from '../../Modal';
@@ -243,6 +242,7 @@ describe('<MessageSimple />', () => {
         messageWrapperRef: expect.any(Object),
         onReactionListClick: expect.any(Function),
         handleOpenThread: expect.any(Function),
+        getMessageActions: expect.any(Function),
       }),
       {},
     );
@@ -275,6 +275,7 @@ describe('<MessageSimple />', () => {
         messageListRect,
         unsafeHTML,
         reactionSelectorRef: expect.any(Object),
+        getMessageActions: expect.any(Function),
       }),
       {},
     );

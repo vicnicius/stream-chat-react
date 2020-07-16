@@ -641,7 +641,7 @@ export interface MessageUIComponentProps
   onMentionsHoverMessage?(event: React.MouseEvent): void;
   onUserClick?(e: React.MouseEvent): void;
   onUserHover?(e: React.MouseEvent): void;
-  getMessageActions(): Array<string>;
+  getMessageActions?(): Array<string>;
   channelConfig?: Client.ChannelConfig | Client.ChannelConfigWithInfo;
   threadList?: boolean;
   additionalMessageInputProps?: object;
@@ -1111,7 +1111,7 @@ export interface MessageActionsProps {
   handleFlag?(event?: React.BaseSyntheticEvent): void;
   handleMute?(event?: React.BaseSyntheticEvent): void;
   mutes?: Client.Mute[];
-  getMessageActions(): Array<string>;
+  getMessageActions?(): Array<string>;
   getFlagMessageSuccessNotification?(message: MessageResponse): string;
   getFlagMessageErrorNotification?(message: MessageResponse): string;
   getMuteUserSuccessNotification?(message: MessageResponse): string;
@@ -1130,7 +1130,7 @@ export interface MessageActionsWrapperProps {
 }
 
 export interface MessageOptionsProps {
-  getMessageActions(): Array<string>;
+  getMessageActions?(): Array<string>;
   handleOpenThread?(event: React.BaseSyntheticEvent): void;
   initialMessage?: boolean;
   message?: Client.MessageResponse;
