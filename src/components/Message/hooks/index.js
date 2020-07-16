@@ -2,6 +2,7 @@ export * from './useActionHandler';
 export * from './useDeleteHandler';
 export * from './useEditHandler';
 export * from './useFlagHandler';
+export * from './useMessageActions';
 export * from './useMentionsHandler';
 export * from './useMuteHandler';
 export * from './useOpenThreadHandler';
