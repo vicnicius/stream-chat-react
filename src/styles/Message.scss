@@ -321,10 +321,8 @@
 
   &-attachment {
     &--img {
-      width: 100%;
-      max-width: 480px;
+      height: 200px;
       display: block;
-      height: inherit;
       cursor: -moz-zoom-in;
       cursor: -webkit-zoom-in;
       cursor: zoom-in;
@@ -418,11 +416,8 @@
 
       &-attachment {
         &--img {
-          width: 100%;
-          max-width: 480px;
+          height: 200px;
           display: block;
-          height: inherit;
-          object-fit: cover;
           border: none;
         }
       }
@@ -963,9 +958,9 @@
       }
     }
   }
-  a[href^="mailto:"] {
+  a[href^='mailto:'] {
     -webkit-hyphens: none;
-   -moz-hyphens: none;
+    -moz-hyphens: none;
     hyphens: none;
   }
 }
