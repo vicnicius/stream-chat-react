@@ -42,6 +42,25 @@ import {
 } from './icons';
 import MessageTimestamp from './MessageTimestamp';
 
+function onRenderCallback(
+  id, // the "id" prop of the Profiler tree that has just committed
+  phase, // either "mount" (if the tree just mounted) or "update" (if it re-rendered)
+  actualDuration, // time spent rendering the committed update
+  baseDuration, // estimated time to render the entire subtree without memoization
+  startTime, // when React began rendering this update
+  commitTime, // when React committed this update
+  interactions, // the Set of interactions belonging to this update
+) {
+  console.log({
+    id,
+    phase,
+    actualDuration,
+    baseDuration,
+    startTime,
+    commitTime,
+    interactions,
+  });
+}
 /**
  * MessageTeam - Render component, should be used together with the Message component
  * Implements the look and feel for a team style collaboration environment
@@ -157,223 +176,225 @@ const MessageTeam = (props) => {
     );
   }
   return (
-    <React.Fragment>
-      <div
-        data-testid="message-team"
-        className={`str-chat__message-team str-chat__message-team--${firstGroupStyle} str-chat__message-team--${
-          message?.type
-        } ${threadList ? 'thread-list' : ''} str-chat__message-team--${
-          message?.status
-        }`}
-        ref={messageWrapperRef}
-      >
-        <div className="str-chat__message-team-meta">
-          {firstGroupStyle === 'top' ||
-          firstGroupStyle === 'single' ||
-          initialMessage ? (
-            <Avatar
-              image={message?.user?.image}
-              name={message?.user?.name || message?.user?.id}
-              size={40}
-              onClick={onUserClick}
-              onMouseOver={onUserHover}
-            />
-          ) : (
-            <div
-              data-testid="team-meta-spacer"
-              style={{ width: 40, marginRight: 0 }}
-            />
-          )}
-          <MessageTimestamp
-            message={message}
-            tDateTimeParser={props.tDateTimeParser}
-            formatDate={formatDate}
-          />
-        </div>
-        <div className="str-chat__message-team-group">
-          {message &&
-            (firstGroupStyle === 'top' ||
-              firstGroupStyle === 'single' ||
-              initialMessage) && (
-              <div
-                data-testid="message-team-author"
-                className="str-chat__message-team-author"
+    <React.Profiler id="MessageTeam" onRender={onRenderCallback}>
+      <React.Fragment>
+        <div
+          data-testid="message-team"
+          className={`str-chat__message-team str-chat__message-team--${firstGroupStyle} str-chat__message-team--${
+            message?.type
+          } ${threadList ? 'thread-list' : ''} str-chat__message-team--${
+            message?.status
+          }`}
+          ref={messageWrapperRef}
+        >
+          <div className="str-chat__message-team-meta">
+            {firstGroupStyle === 'top' ||
+            firstGroupStyle === 'single' ||
+            initialMessage ? (
+              <Avatar
+                image={message?.user?.image}
+                name={message?.user?.name || message?.user?.id}
+                size={40}
                 onClick={onUserClick}
-              >
-                <strong>{message.user?.name || message.user?.id}</strong>
-                {message.type === 'error' && (
-                  <div className="str-chat__message-team-error-header">
-                    {t('Only visible to you')}
-                  </div>
-                )}
-              </div>
+                onMouseOver={onUserHover}
+              />
+            ) : (
+              <div
+                data-testid="team-meta-spacer"
+                style={{ width: 40, marginRight: 0 }}
+              />
             )}
-          <div
-            data-testid="message-team-content"
-            className={`str-chat__message-team-content str-chat__message-team-content--${firstGroupStyle} str-chat__message-team-content--${
-              message?.text === '' ? 'image' : 'text'
-            }`}
-          >
-            {!initialMessage &&
-              message &&
-              message.status !== 'sending' &&
-              message.status !== 'failed' &&
-              message.type !== 'system' &&
-              message.type !== 'ephemeral' &&
-              message.type !== 'error' && (
+            <MessageTimestamp
+              message={message}
+              tDateTimeParser={props.tDateTimeParser}
+              formatDate={formatDate}
+            />
+          </div>
+          <div className="str-chat__message-team-group">
+            {message &&
+              (firstGroupStyle === 'top' ||
+                firstGroupStyle === 'single' ||
+                initialMessage) && (
                 <div
-                  data-testid="message-team-actions"
-                  className={`str-chat__message-team-actions`}
+                  data-testid="message-team-author"
+                  className="str-chat__message-team-author"
+                  onClick={onUserClick}
                 >
-                  {message && showDetailedReactions && (
-                    <ReactionSelector
-                      handleReaction={propHandleReaction || handleReaction}
-                      latest_reactions={message.latest_reactions}
-                      reaction_counts={message.reaction_counts}
-                      detailedView={true}
-                      ref={reactionSelectorRef}
-                    />
+                  <strong>{message.user?.name || message.user?.id}</strong>
+                  {message.type === 'error' && (
+                    <div className="str-chat__message-team-error-header">
+                      {t('Only visible to you')}
+                    </div>
                   )}
-
-                  {channelConfig && channelConfig.reactions && (
-                    <span
-                      data-testid="message-team-reaction-icon"
-                      title="Reactions"
-                      onClick={onReactionListClick}
-                    >
-                      <ReactionIcon />
-                    </span>
-                  )}
-                  {!threadList && channelConfig && channelConfig.replies && (
-                    <span
-                      data-testid="message-team-thread-icon"
-                      title="Start a thread"
-                      onClick={propHandleOpenThread || handleOpenThread}
-                    >
-                      <ThreadIcon />
-                    </span>
-                  )}
-                  {message &&
-                    getMessageActions &&
-                    getMessageActions().length > 0 && (
-                      <MessageActions
-                        addNotification={props.addNotification}
-                        message={message}
-                        getMessageActions={props.getMessageActions}
-                        messageListRect={props.messageListRect}
-                        messageWrapperRef={messageWrapperRef}
-                        setEditingState={setEdit}
-                        getMuteUserSuccessNotification={
-                          props.getMuteUserSuccessNotification
-                        }
-                        getMuteUserErrorNotification={
-                          props.getMuteUserErrorNotification
-                        }
-                        getFlagMessageErrorNotification={
-                          props.getFlagMessageErrorNotification
-                        }
-                        getFlagMessageSuccessNotification={
-                          props.getFlagMessageSuccessNotification
-                        }
-                        handleFlag={props.handleFlag}
-                        handleMute={props.handleMute}
-                        handleEdit={props.handleEdit}
-                        handleDelete={props.handleDelete}
-                        customWrapperClass={''}
-                        inline
-                      />
-                    )}
                 </div>
               )}
-            {message && (
-              <span
-                data-testid="message-team-message"
-                className={
-                  isOnlyEmojis(message.text)
-                    ? 'str-chat__message-team-text--is-emoji'
-                    : ''
-                }
-                onMouseOver={onMentionsHover}
-                onClick={onMentionsClick}
-              >
-                {unsafeHTML ? (
-                  <div dangerouslySetInnerHTML={{ __html: message.html }} />
-                ) : (
-                  messageText
+            <div
+              data-testid="message-team-content"
+              className={`str-chat__message-team-content str-chat__message-team-content--${firstGroupStyle} str-chat__message-team-content--${
+                message?.text === '' ? 'image' : 'text'
+              }`}
+            >
+              {!initialMessage &&
+                message &&
+                message.status !== 'sending' &&
+                message.status !== 'failed' &&
+                message.type !== 'system' &&
+                message.type !== 'ephemeral' &&
+                message.type !== 'error' && (
+                  <div
+                    data-testid="message-team-actions"
+                    className={`str-chat__message-team-actions`}
+                  >
+                    {message && showDetailedReactions && (
+                      <ReactionSelector
+                        handleReaction={propHandleReaction || handleReaction}
+                        latest_reactions={message.latest_reactions}
+                        reaction_counts={message.reaction_counts}
+                        detailedView={true}
+                        ref={reactionSelectorRef}
+                      />
+                    )}
+
+                    {channelConfig && channelConfig.reactions && (
+                      <span
+                        data-testid="message-team-reaction-icon"
+                        title="Reactions"
+                        onClick={onReactionListClick}
+                      >
+                        <ReactionIcon />
+                      </span>
+                    )}
+                    {!threadList && channelConfig && channelConfig.replies && (
+                      <span
+                        data-testid="message-team-thread-icon"
+                        title="Start a thread"
+                        onClick={propHandleOpenThread || handleOpenThread}
+                      >
+                        <ThreadIcon />
+                      </span>
+                    )}
+                    {message &&
+                      getMessageActions &&
+                      getMessageActions().length > 0 && (
+                        <MessageActions
+                          addNotification={props.addNotification}
+                          message={message}
+                          getMessageActions={props.getMessageActions}
+                          messageListRect={props.messageListRect}
+                          messageWrapperRef={messageWrapperRef}
+                          setEditingState={setEdit}
+                          getMuteUserSuccessNotification={
+                            props.getMuteUserSuccessNotification
+                          }
+                          getMuteUserErrorNotification={
+                            props.getMuteUserErrorNotification
+                          }
+                          getFlagMessageErrorNotification={
+                            props.getFlagMessageErrorNotification
+                          }
+                          getFlagMessageSuccessNotification={
+                            props.getFlagMessageSuccessNotification
+                          }
+                          handleFlag={props.handleFlag}
+                          handleMute={props.handleMute}
+                          handleEdit={props.handleEdit}
+                          handleDelete={props.handleDelete}
+                          customWrapperClass={''}
+                          inline
+                        />
+                      )}
+                  </div>
                 )}
-              </span>
-            )}
+              {message && (
+                <span
+                  data-testid="message-team-message"
+                  className={
+                    isOnlyEmojis(message.text)
+                      ? 'str-chat__message-team-text--is-emoji'
+                      : ''
+                  }
+                  onMouseOver={onMentionsHover}
+                  onClick={onMentionsClick}
+                >
+                  {unsafeHTML ? (
+                    <div dangerouslySetInnerHTML={{ __html: message.html }} />
+                  ) : (
+                    messageText
+                  )}
+                </span>
+              )}
 
-            {galleryImages.length !== 0 && <Gallery images={galleryImages} />}
+              {galleryImages.length !== 0 && <Gallery images={galleryImages} />}
 
-            {message && message.text === '' && (
+              {message && message.text === '' && (
+                <MessageTeamAttachments
+                  Attachment={props.Attachment}
+                  message={message}
+                  handleAction={propHandleAction}
+                />
+              )}
+
+              {message?.latest_reactions &&
+                message.latest_reactions.length !== 0 &&
+                message.text !== '' && (
+                  <SimpleReactionsList
+                    reaction_counts={message.reaction_counts}
+                    handleReaction={propHandleReaction || handleReaction}
+                    reactions={message.latest_reactions}
+                  />
+                )}
+              {message?.status === 'failed' && (
+                <button
+                  data-testid="message-team-failed"
+                  className="str-chat__message-team-failed"
+                  onClick={() => {
+                    if (message.status === 'failed' && retry) {
+                      // FIXME: type checking fails here because in the case of a failed message,
+                      // `message` is of type Client.Message (i.e. request object)
+                      // instead of Client.MessageResponse (i.e. server response object)
+                      // @ts-ignore
+                      retry(message);
+                    }
+                  }}
+                >
+                  <ErrorIcon />
+                  {t('Message failed. Click to try again.')}
+                </button>
+              )}
+            </div>
+            <MessageTeamStatus
+              readBy={props.readBy}
+              message={message}
+              threadList={threadList}
+              lastReceivedId={props.lastReceivedId}
+              t={propT}
+            />
+            {message && message.text !== '' && attachments && (
               <MessageTeamAttachments
                 Attachment={props.Attachment}
                 message={message}
                 handleAction={propHandleAction}
               />
             )}
-
             {message?.latest_reactions &&
               message.latest_reactions.length !== 0 &&
-              message.text !== '' && (
+              message.text === '' && (
                 <SimpleReactionsList
                   reaction_counts={message.reaction_counts}
                   handleReaction={propHandleReaction || handleReaction}
                   reactions={message.latest_reactions}
                 />
               )}
-            {message?.status === 'failed' && (
-              <button
-                data-testid="message-team-failed"
-                className="str-chat__message-team-failed"
-                onClick={() => {
-                  if (message.status === 'failed' && retry) {
-                    // FIXME: type checking fails here because in the case of a failed message,
-                    // `message` is of type Client.Message (i.e. request object)
-                    // instead of Client.MessageResponse (i.e. server response object)
-                    // @ts-ignore
-                    retry(message);
-                  }
-                }}
-              >
-                <ErrorIcon />
-                {t('Message failed. Click to try again.')}
-              </button>
-            )}
-          </div>
-          <MessageTeamStatus
-            readBy={props.readBy}
-            message={message}
-            threadList={threadList}
-            lastReceivedId={props.lastReceivedId}
-            t={propT}
-          />
-          {message && message.text !== '' && attachments && (
-            <MessageTeamAttachments
-              Attachment={props.Attachment}
-              message={message}
-              handleAction={propHandleAction}
-            />
-          )}
-          {message?.latest_reactions &&
-            message.latest_reactions.length !== 0 &&
-            message.text === '' && (
-              <SimpleReactionsList
-                reaction_counts={message.reaction_counts}
-                handleReaction={propHandleReaction || handleReaction}
-                reactions={message.latest_reactions}
+            {!threadList && message && (
+              <MessageRepliesCountButton
+                onClick={propHandleOpenThread || handleOpenThread}
+                reply_count={message.reply_count}
               />
             )}
-          {!threadList && message && (
-            <MessageRepliesCountButton
-              onClick={propHandleOpenThread || handleOpenThread}
-              reply_count={message.reply_count}
-            />
-          )}
+          </div>
         </div>
-      </div>
-    </React.Fragment>
+      </React.Fragment>
+    </React.Profiler>
   );
 };
 

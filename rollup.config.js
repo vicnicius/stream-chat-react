@@ -16,7 +16,7 @@ import replace from '@rollup/plugin-replace';
 import process from 'process';
 import pkg from './package.json';
 
-process.env.NODE_ENV = 'production';
+// process.env.NODE_ENV = 'production';
 
 const baseConfig = {
   input: 'src/index.js',
