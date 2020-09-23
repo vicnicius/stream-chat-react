@@ -7,9 +7,10 @@ import {
   generateUser,
   generateMessage,
   generateReaction,
+  emojiMockConfig,
 } from 'mock-builders';
 
-import { ChannelContext } from '../../../context';
+import { ChannelContext, EmojiContext } from '../../../context';
 import MessageTeam from '../MessageTeam';
 import { Avatar as AvatarMock } from '../../Avatar';
 import { MessageInput as MessageInputMock } from '../../MessageInput';
@@ -40,7 +41,9 @@ async function renderMessageTeam(
   const client = await getTestClientWithUser(alice);
   return render(
     <ChannelContext.Provider value={{ client, channel, t: (key) => key }}>
-      <MessageTeam message={message} typing={false} {...props} />
+      <EmojiContext.Provider value={emojiMockConfig}>
+        <MessageTeam message={message} typing={false} {...props} />
+      </EmojiContext.Provider>
     </ChannelContext.Provider>,
   );
 }
